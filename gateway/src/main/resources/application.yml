@@ -1,0 +1,92 @@
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+#<<< API Gateway / Routes
+      routes:
+        - id: customer
+          uri: http://localhost:8082
+          predicates:
+            - Path=/cutomers/**, 
+        - id: move
+          uri: http://localhost:8083
+          predicates:
+            - Path=/moves/**, 
+        - id: family
+          uri: http://localhost:8084
+          predicates:
+            - Path=/families/**, 
+        - id: alarm
+          uri: http://localhost:8085
+          predicates:
+            - Path=/alarms/**, 
+        - id: location
+          uri: http://localhost:8086
+          predicates:
+            - Path=/locations/**, 
+        - id: frontend
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+#>>> API Gateway / Routes
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: customer
+          uri: http://customer:8080
+          predicates:
+            - Path=/cutomers/**, 
+        - id: move
+          uri: http://move:8080
+          predicates:
+            - Path=/moves/**, 
+        - id: family
+          uri: http://family:8080
+          predicates:
+            - Path=/families/**, 
+        - id: alarm
+          uri: http://alarm:8080
+          predicates:
+            - Path=/alarms/**, 
+        - id: location
+          uri: http://location:8080
+          predicates:
+            - Path=/locations/**, 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080

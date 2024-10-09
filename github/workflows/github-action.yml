@@ -1,0 +1,87 @@
+name: github-action
+run-name: ${{ github.actor }} is out building GitHub Actions
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**' 
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Maven Projects
+        run: |
+          mvn clean package -f ./customer/pom.xml
+          mvn clean package -f ./move/pom.xml
+          mvn clean package -f ./family/pom.xml
+          mvn clean package -f ./alarm/pom.xml
+          mvn clean package -f ./location/pom.xml
+
+      - name: Docker Build and push for Customer
+        uses: docker/build-push-action@v4
+        with:
+          context: ./customer
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/customer:latest
+            ghcr.io/${{ github.repository }}/customer:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Move
+        uses: docker/build-push-action@v4
+        with:
+          context: ./move
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/move:latest
+            ghcr.io/${{ github.repository }}/move:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Family
+        uses: docker/build-push-action@v4
+        with:
+          context: ./family
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/family:latest
+            ghcr.io/${{ github.repository }}/family:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Alarm
+        uses: docker/build-push-action@v4
+        with:
+          context: ./alarm
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/alarm:latest
+            ghcr.io/${{ github.repository }}/alarm:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Location
+        uses: docker/build-push-action@v4
+        with:
+          context: ./location
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/location:latest
+            ghcr.io/${{ github.repository }}/location:${{ github.ref_name }}
+            
