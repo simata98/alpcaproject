@@ -55,6 +55,10 @@ logging:
     org.hibernate.type: info
     org.springframework.cloud: info
 
+naver-maps:
+  url: https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving
+  client-id: auwudtezo3
+  client-token: DDn4WeLj4RW091e3fpfEfitFtI1qRiqF6Q3IE0YT
 
 server:
   port: 8083

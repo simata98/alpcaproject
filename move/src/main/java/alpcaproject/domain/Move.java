@@ -1,16 +1,14 @@
 package alpcaproject.domain;
 
 import alpcaproject.MoveApplication;
-import alpcaproject.domain.MoveCancelled;
-import alpcaproject.domain.MoveEnded;
-import alpcaproject.domain.MoveStarted;
-import alpcaproject.domain.MoveUpdated;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
+
+import alpcaproject.util.NaverMapClient;
+import alpcaproject.util.NaverMapService;
+import alpcaproject.util.NaverMapsAPIDTO;
 import lombok.Data;
 
 @Entity
@@ -67,7 +65,12 @@ public class Move {
         );
         return moveRepository;
     }
-
+    public static NaverMapService naverMapService() {
+        NaverMapService naverMapService = MoveApplication.applicationContext.getBean(
+                NaverMapService.class
+        );
+        return naverMapService;
+    }
     //<<< Clean Arch / Port Method
     public static void updateGoalLoc(LocRegistered locRegistered) {
         //implement business logic here: 목적지 좌표 업데이트
@@ -90,29 +93,35 @@ public class Move {
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
-    public static void startMove(MoveStarted moveStarted) {
+    public static String startMove(MoveStarted moveStarted) {
         //implement business logic here: move 생성
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddsssss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddss");
         Move move = new Move();
         move.setMoveId("move-" + LocalDateTime.now().format(formatter));
         // from caller
-        move.setCustomerId("1234");
-        move.setFamilyId("1234");
+        move.setCustomerId(moveStarted.getCustomerId());
+        move.setFamilyId(moveStarted.getFamilyId());
         move.setRole("143rwe");
-        move.setStartRdnAddr("fadsf");
+        move.setStartRdnAddr(moveStarted.getStartRdnAddr());
         // from api
-        move.setDistance(123);
-        move.setDuration(123);
-        move.setPath("1234");
-        move.setStartLocX(55.33);
-        move.setStartLocY(1.23);
-        move.setGoalLocX(5.234);
-        move.setGoalLocY(4.232);
+        NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                moveStarted.getStartLocX().toString() + "," + moveStarted.getStartLocY().toString(),
+                moveStarted.getGoalLocX().toString() + "," + moveStarted.getGoalLocY().toString()
+                );
+        move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+        move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+        move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
+        move.setStartLocX(moveStarted.getStartLocX());
+        move.setStartLocY(moveStarted.getStartLocY());
+        move.setGoalLocX(moveStarted.getGoalLocX());
+        move.setGoalLocY(moveStarted.getGoalLocY());
         // fixed
         move.setStatus("start");
         repository().save(move);
 
         moveStarted.publishAfterCommit();
+
+        return move.getMoveId();
     }
 
     //>>> Clean Arch / Port Method
@@ -120,9 +129,22 @@ public class Move {
     public static void updateMove(MoveUpdated moveUpdated) {
         //implement business logic here: update properties
         repository().findById(moveUpdated.getMoveId()).ifPresent(move->{
-            move.setPath("fasdf");
-            move.setDuration(14123);
-            move.setDistance(25234);
+
+            String coordinates = move.getPath().replace("[", "").replace("]", "");
+            String[] parts = coordinates.split(",\\s*");
+
+            String startLocx = parts[0];
+            String startLocy = parts[1];
+
+            // from api
+            NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                    startLocx + "," + startLocy,
+                    move.getGoalLocX().toString() + "," + move.getGoalLocY().toString()
+            );
+            move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+            move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+            move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
+            move.setStatus("moving");
             repository().save(move);
          });
         moveUpdated.publishAfterCommit();
@@ -145,9 +167,13 @@ public class Move {
     public static void endMove(MoveEnded moveEnded) {
         //implement business logic here: update status
         repository().findById(moveEnded.getMoveId()).ifPresent(move->{
-            move.setPath("fasdf");
-            move.setDuration(14123);
-            move.setDistance(25234);
+            NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                    moveEnded.getStartLocX().toString() + "," + moveEnded.getStartLocY(),
+                    moveEnded.getGoalLocX() + "," + moveEnded.getGoalLocY()
+            );
+            move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+            move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+            move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
             move.setStatus("end");
             repository().save(move);
          });
