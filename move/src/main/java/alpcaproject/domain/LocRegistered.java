@@ -13,4 +13,5 @@ public class LocRegistered extends AbstractEvent {
     private String customerId;
     private Double locX;
     private Double locY;
+    private String moveId;
 }

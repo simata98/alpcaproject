@@ -71,9 +71,9 @@ public class Move {
     //<<< Clean Arch / Port Method
     public static void updateGoalLoc(LocRegistered locRegistered) {
         //implement business logic here: 목적지 좌표 업데이트
-        repository().findById(locRegistered.getLocId()).ifPresent(move-> {
-            move.setGoalLocX(locRegistered.getLocX());
-            move.setGoalLocY(locRegistered.getLocY());
+        repository().findById(locRegistered.getMoveId()).ifPresent(move-> {
+            move.setStartLocX(locRegistered.getLocX());
+            move.setStartLocY(locRegistered.getLocY());
             repository().save(move);
         });
     }
@@ -82,7 +82,7 @@ public class Move {
     //<<< Clean Arch / Port Method
     public static void removeGoalLoc(LocRemoved locRemoved) {
             //implement business logic here: 목적지 삭제
-            repository().findById(locRemoved.getLocId()).ifPresent(move->{
+            repository().findById(locRemoved.getMoveId()).ifPresent(move->{
                 repository().delete(move);
             });
 
