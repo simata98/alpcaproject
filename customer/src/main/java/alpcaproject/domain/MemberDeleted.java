@@ -11,6 +11,7 @@ public class MemberDeleted extends AbstractEvent {
 
     private String customerId;
     private String familyId;
+    private String status;
 
     public MemberDeleted(Customer aggregate) {
         super(aggregate);

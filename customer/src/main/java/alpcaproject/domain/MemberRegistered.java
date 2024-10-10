@@ -11,6 +11,7 @@ public class MemberRegistered extends AbstractEvent {
 
     private String customerId;
     private String familyId;
+    private String status;
 
     public MemberRegistered(Customer aggregate) {
         super(aggregate);
