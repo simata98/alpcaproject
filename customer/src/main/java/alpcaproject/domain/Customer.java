@@ -1,5 +1,7 @@
 package alpcaproject.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +29,6 @@ public class Customer {
 
     @PostPersist
     public void onPostPersist() {
-        // customer를 등록하려면 family 등록도 진행되어야 함
         CustomerRegistered customerRegistered = new CustomerRegistered(this);
         customerRegistered.publishAfterCommit();
     }
@@ -56,29 +57,23 @@ public class Customer {
     }
 
     public static void updateActive(FamilyApproved familyApproved) {
-        Customer customer = repository().findById(Long.parseLong(familyApproved.getCutomerId())).orElse(new Customer());
-        if (customer != null) {
+        List<Customer> customers = repository().findByFamilyId(familyApproved.getFamilyId());
+        for (Customer customer : customers) {
             customer.setStatus("Active");
-            customer.setFamilyId(familyApproved.getFamilyId());
-    
             repository().save(customer);
-    
+            
             MemberRegistered memberRegistered = new MemberRegistered(customer);
             memberRegistered.publishAfterCommit();
         }
     }
 
     public static void updateInactive(FamilyDenied familyDenied) {
-        Customer customer = repository().findById(Long.parseLong(familyDenied.getCutomerId())).orElse(new Customer());
-        customer.setStatus("Inactive");
-        customer.setFamilyId("null");
-
-        repository().save(customer);
-
-        MemberDeleted memberDeleted = new MemberDeleted(customer);
-        memberDeleted.publishAfterCommit();
+        repository().findById(Long.parseLong(familyDenied.getCutomerId())).ifPresent(customer -> {
+            customer.setStatus("Inactive");
+            customer.setFamilyId(null);
+            repository().save(customer);
+            MemberDeleted memberDeleted = new MemberDeleted(customer);
+            memberDeleted.publishAfterCommit();
+        });
     }
-    //>>> Clean Arch / Port Method
-
 }
-//>>> DDD / Aggregate Root

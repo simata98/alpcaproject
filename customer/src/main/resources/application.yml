@@ -57,12 +57,8 @@ logging:
   level:
     org.hibernate.type: trace
     org.springframework.cloud: debug
-
-api:
-  url: 
-    family: localhost:8084 
     
-
+  
 server:
   port: 8082
 
@@ -98,8 +94,5 @@ spring:
           destination: alpcaproject
           contentType: application/json
 
-api:
-  url: 
-    family: family:8080 
     
 

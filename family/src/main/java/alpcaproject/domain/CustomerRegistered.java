@@ -10,4 +10,6 @@ import lombok.*;
 public class CustomerRegistered extends AbstractEvent {
 
     private String customerId;
+    private String familyId;
+    private String status;
 }

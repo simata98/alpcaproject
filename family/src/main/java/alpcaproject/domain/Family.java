@@ -16,6 +16,9 @@ import lombok.Data;
 public class Family {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private String familyId;
 
     private String aptCd;
@@ -32,15 +35,17 @@ public class Family {
 
     private String role;
 
-    private String active;
+    private String status;
 
     @PostPersist
     public void onPostPersist() {
-        FamilyApproved familyApproved = new FamilyApproved(this);
-        familyApproved.publishAfterCommit();
-
-        FamilyDenied familyDenied = new FamilyDenied(this);
-        familyDenied.publishAfterCommit();
+        if ("Approved".equals(this.status)) {
+            FamilyApproved familyApproved = new FamilyApproved(this);
+            familyApproved.publishAfterCommit();
+        } else if ("Denied".equals(this.status)) {
+            FamilyDenied familyDenied = new FamilyDenied(this);
+            familyDenied.publishAfterCommit();
+        }
     }
 
     public static FamilyRepository repository() {
@@ -54,27 +59,10 @@ public class Family {
     public static void customerRegistered(
         CustomerRegistered customerRegistered
     ) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
         Family family = new Family();
+        family.setFamilyId(customerRegistered.getFamilyId());
+        family.setCutomerId(customerRegistered.getCustomerId());
+        family.setStatus("Registered");
         repository().save(family);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(customerRegistered.get???()).ifPresent(family->{
-            
-            family // do something
-            repository().save(family);
-
-
-         });
-        */
-
     }
-    //>>> Clean Arch / Port Method
-
 }
-//>>> DDD / Aggregate Root

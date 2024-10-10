@@ -19,7 +19,7 @@ public class FamilyDenied extends AbstractEvent {
     private Double locY;
     private String cutomerId;
     private String role;
-    private String active;
+    private String status;
 
     public FamilyDenied(Family aggregate) {
         super(aggregate);

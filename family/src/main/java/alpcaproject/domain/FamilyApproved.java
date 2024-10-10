@@ -19,7 +19,7 @@ public class FamilyApproved extends AbstractEvent {
     private Double locY;
     private String cutomerId;
     private String role;
-    private String active;
+    private String status;
 
     public FamilyApproved(Family aggregate) {
         super(aggregate);

@@ -7,4 +7,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 //<<< PoEAA / Repository
 @RepositoryRestResource(collectionResourceRel = "families", path = "families")
 public interface FamilyRepository
-    extends PagingAndSortingRepository<Family, String> {}
+    extends PagingAndSortingRepository<Family, Long> {}
