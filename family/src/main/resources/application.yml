@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: customer
+    name: family
 ---
 
 spring:
@@ -29,7 +29,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: customer
+          group: family
 #<<< EDA / Topic Name
           destination: alpcaproject
 #>>> EDA / Topic Name
@@ -39,6 +39,7 @@ spring:
           destination: alpcaproject
 #>>> EDA / Topic Name
           contentType: application/json
+
   h2:
     console:
       enabled: true
@@ -58,13 +59,9 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
-api:
-  url: 
-    family: localhost:8084 
-    
 
 server:
-  port: 8082
+  port: 8084
 
 ---
 
@@ -91,15 +88,11 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: customer
+          group: family
           destination: alpcaproject
           contentType: application/json
         event-out:
           destination: alpcaproject
           contentType: application/json
 
-api:
-  url: 
-    family: family:8080 
-    
 
