@@ -39,7 +39,17 @@ spring:
           destination: alpcaproject
 #>>> EDA / Topic Name
           contentType: application/json
-
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+    datasource:
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:location
+      username: sa
+      password:
+  datasource:
+    generate-unique-name: false
 logging:
   level:
     org.hibernate.type: trace
@@ -56,6 +66,7 @@ spring:
   jpa:
     properties:
       hibernate:
+        ddl-auto: create-drop
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
@@ -80,5 +91,16 @@ spring:
         event-out:
           destination: alpcaproject
           contentType: application/json
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+    datasource:
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:location
+      username: sa
+      password:
+  datasource:
+    generate-unique-name: false
 
 

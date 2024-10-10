@@ -1,14 +1,14 @@
 package alpcaproject.domain;
 
 import alpcaproject.MoveApplication;
-import alpcaproject.domain.MoveCancelled;
-import alpcaproject.domain.MoveEnded;
-import alpcaproject.domain.MoveStarted;
-import alpcaproject.domain.MoveUpdated;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.*;
+
+import alpcaproject.util.NaverMapClient;
+import alpcaproject.util.NaverMapService;
+import alpcaproject.util.NaverMapsAPIDTO;
 import lombok.Data;
 
 @Entity
@@ -46,17 +46,17 @@ public class Move {
 
     @PostPersist
     public void onPostPersist() {
-        MoveStarted moveStarted = new MoveStarted(this);
-        moveStarted.publishAfterCommit();
-
-        MoveCancelled moveCancelled = new MoveCancelled(this);
-        moveCancelled.publishAfterCommit();
-
-        MoveEnded moveEnded = new MoveEnded(this);
-        moveEnded.publishAfterCommit();
-
-        MoveUpdated moveUpdated = new MoveUpdated(this);
-        moveUpdated.publishAfterCommit();
+//        MoveStarted moveStarted = new MoveStarted(this);
+//        moveStarted.publishAfterCommit();
+//
+//        MoveCancelled moveCancelled = new MoveCancelled(this);
+//        moveCancelled.publishAfterCommit();
+//
+//        MoveEnded moveEnded = new MoveEnded(this);
+//        moveEnded.publishAfterCommit();
+//
+//        MoveUpdated moveUpdated = new MoveUpdated(this);
+//        moveUpdated.publishAfterCommit();
     }
 
     public static MoveRepository repository() {
@@ -65,148 +65,119 @@ public class Move {
         );
         return moveRepository;
     }
-
+    public static NaverMapService naverMapService() {
+        NaverMapService naverMapService = MoveApplication.applicationContext.getBean(
+                NaverMapService.class
+        );
+        return naverMapService;
+    }
     //<<< Clean Arch / Port Method
     public static void updateGoalLoc(LocRegistered locRegistered) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Move move = new Move();
-        repository().save(move);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(locRegistered.get???()).ifPresent(move->{
-            
-            move // do something
+        //implement business logic here: 목적지 좌표 업데이트
+        repository().findById(locRegistered.getMoveId()).ifPresent(move-> {
+            move.setStartLocX(locRegistered.getLocX());
+            move.setStartLocY(locRegistered.getLocY());
             repository().save(move);
-
-
-         });
-        */
-
+        });
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void removeGoalLoc(LocRemoved locRemoved) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Move move = new Move();
-        repository().save(move);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(locRemoved.get???()).ifPresent(move->{
-            
-            move // do something
-            repository().save(move);
-
-
-         });
-        */
+            //implement business logic here: 목적지 삭제
+            repository().findById(locRemoved.getMoveId()).ifPresent(move->{
+                repository().delete(move);
+            });
 
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
-    public static void startMove(MoveStarted moveStarted) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
+    public static String startMove(MoveStarted moveStarted) {
+        //implement business logic here: move 생성
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddss");
         Move move = new Move();
+        move.setMoveId("move-" + LocalDateTime.now().format(formatter));
+        // from caller
+        move.setCustomerId(moveStarted.getCustomerId());
+        move.setFamilyId(moveStarted.getFamilyId());
+        move.setRole("143rwe");
+        move.setStartRdnAddr(moveStarted.getStartRdnAddr());
+        // from api
+        NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                moveStarted.getStartLocX().toString() + "," + moveStarted.getStartLocY().toString(),
+                moveStarted.getGoalLocX().toString() + "," + moveStarted.getGoalLocY().toString()
+                );
+        move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+        move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+        move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
+        move.setStartLocX(moveStarted.getStartLocX());
+        move.setStartLocY(moveStarted.getStartLocY());
+        move.setGoalLocX(moveStarted.getGoalLocX());
+        move.setGoalLocY(moveStarted.getGoalLocY());
+        // fixed
+        move.setStatus("start");
         repository().save(move);
 
-        */
+        moveStarted.publishAfterCommit();
 
-        /** Example 2:  finding and process
-        
-        repository().findById(moveStarted.get???()).ifPresent(move->{
-            
-            move // do something
-            repository().save(move);
-
-
-         });
-        */
-
+        return move.getMoveId();
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void updateMove(MoveUpdated moveUpdated) {
-        //implement business logic here:
+        //implement business logic here: update properties
+        repository().findById(moveUpdated.getMoveId()).ifPresent(move->{
 
-        /** Example 1:  new item 
-        Move move = new Move();
-        repository().save(move);
+            String coordinates = move.getPath().replace("[", "").replace("]", "");
+            String[] parts = coordinates.split(",\\s*");
 
-        */
+            String startLocx = parts[0];
+            String startLocy = parts[1];
 
-        /** Example 2:  finding and process
-        
-        repository().findById(moveUpdated.get???()).ifPresent(move->{
-            
-            move // do something
+            // from api
+            NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                    startLocx + "," + startLocy,
+                    move.getGoalLocX().toString() + "," + move.getGoalLocY().toString()
+            );
+            move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+            move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+            move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
+            move.setStatus("moving");
             repository().save(move);
-
-
          });
-        */
-
+        moveUpdated.publishAfterCommit();
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void cancelMove(MoveCancelled moveCancelled) {
-        //implement business logic here:
+        //implement business logic here: update status
 
-        /** Example 1:  new item 
-        Move move = new Move();
-        repository().save(move);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(moveCancelled.get???()).ifPresent(move->{
-            
-            move // do something
+        repository().findById(moveCancelled.getMoveId()).ifPresent(move->{
+            move.setStatus("cancel");
             repository().save(move);
-
-
          });
-        */
-
+        moveCancelled.publishAfterCommit();
     }
 
     //>>> Clean Arch / Port Method
     //<<< Clean Arch / Port Method
     public static void endMove(MoveEnded moveEnded) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Move move = new Move();
-        repository().save(move);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(moveEnded.get???()).ifPresent(move->{
-            
-            move // do something
+        //implement business logic here: update status
+        repository().findById(moveEnded.getMoveId()).ifPresent(move->{
+            NaverMapsAPIDTO.ResponseDTO resp = naverMapService().getDirections(
+                    moveEnded.getStartLocX().toString() + "," + moveEnded.getStartLocY(),
+                    moveEnded.getGoalLocX() + "," + moveEnded.getGoalLocY()
+            );
+            move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
+            move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
+            move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(0).toString());
+            move.setStatus("end");
             repository().save(move);
-
-
          });
-        */
-
+        moveEnded.publishAfterCommit();
     }
     //>>> Clean Arch / Port Method
 

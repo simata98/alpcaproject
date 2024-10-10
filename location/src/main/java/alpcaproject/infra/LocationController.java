@@ -13,11 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/locations")
+@RequestMapping(value="/locations")
 @Transactional
 public class LocationController {
 
-    @Autowired
-    LocationRepository locationRepository;
+    @PostMapping
+    public void registerLoc(@RequestBody Location location){
+        location.register();
+    }
+
+    @DeleteMapping
+    public void deleteLoc(@RequestBody Location location){
+        location.delete();
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

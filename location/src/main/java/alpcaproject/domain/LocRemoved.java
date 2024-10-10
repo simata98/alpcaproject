@@ -15,6 +15,7 @@ public class LocRemoved extends AbstractEvent {
     private String customerId;
     private Double locX;
     private Double locY;
+    private String moveId;
 
     public LocRemoved(Location aggregate) {
         super(aggregate);

@@ -24,13 +24,17 @@ public class Location {
 
     private Double locY;
 
+    private String moveId;
+
     @PostPersist
     public void onPostPersist() {
-        LocRegistered locRegistered = new LocRegistered(this);
-        locRegistered.publishAfterCommit();
-
-        LocRemoved locRemoved = new LocRemoved(this);
-        locRemoved.publishAfterCommit();
+//        repository().findById(this.locId).ifPresentOrElse(location -> {
+//            LocRemoved locRemoved = new LocRemoved(this);
+//            locRemoved.publishAfterCommit();
+//        }, () -> {
+//            LocRegistered locRegistered = new LocRegistered(this);
+//            locRegistered.publishAfterCommit();
+//        });
     }
 
     public static LocationRepository repository() {
@@ -38,6 +42,16 @@ public class Location {
             LocationRepository.class
         );
         return locationRepository;
+    }
+
+    public void register() {
+        LocRegistered locRegistered = new LocRegistered(this);
+        locRegistered.publishAfterCommit();
+    }
+
+    public void delete() {
+        LocRemoved locRemoved = new LocRemoved(this);
+        locRemoved.publishAfterCommit();
     }
 }
 //>>> DDD / Aggregate Root
