@@ -1,10 +1,8 @@
 package alpcaproject.domain;
 
-import alpcaproject.domain.*;
 import alpcaproject.infra.AbstractEvent;
-import java.time.LocalDate;
-import java.util.*;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 //<<< DDD / Domain Event
 @Data
@@ -12,8 +10,9 @@ import lombok.*;
 public class CustomerDeleted extends AbstractEvent {
 
     private String customerId;
+    private String status;
 
-    public CustomerDeleted(Cutomer aggregate) {
+    public CustomerDeleted(Customer aggregate) {
         super(aggregate);
     }
 
