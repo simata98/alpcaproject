@@ -10,6 +10,7 @@ import lombok.ToString;
 public class CustomerDeleted extends AbstractEvent {
 
     private String customerId;
+    private String status;
 
     public CustomerDeleted(Customer aggregate) {
         super(aggregate);
