@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: customer
-          image: username/customer:latest
+          image: c4nd0it/customer:241010
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
         - name: move
-          image: username/move:latest
+          image: c4nd0it/move:241010
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -98,7 +98,7 @@ spec:
     spec:
       containers:
         - name: family
-          image: username/family:latest
+          image: c4nd0it/family:241010
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -138,7 +138,7 @@ spec:
     spec:
       containers:
         - name: alarm
-          image: username/alarm:latest
+          image: c4nd0it/alarm:241010
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -178,7 +178,7 @@ spec:
     spec:
       containers:
         - name: location
-          image: username/location:latest
+          image: c4nd0it/location:241010
           ports:
             - containerPort: 8080
           readinessProbe:

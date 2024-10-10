@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/cutomers")
+// @RequestMapping(value="/cutomer")
 @Transactional
 public class CustomerController {
     // Customer를 삭제하는 로직
