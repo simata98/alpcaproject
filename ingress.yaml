@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: "Ingress"
+metadata: 
+  name: "family-allimee-ingress"
+  annotations: 
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingressclass.kubernetes.io/is-default-class: "true"
+spec: 
+  ingressClassName: nginx
+  rules: 
+    - host: ""
+      http: 
+        paths: 
+          - path: /customers
+            pathType: Prefix
+            backend: 
+              service:
+                name: customer
+                port:
+                  number: 8080
+          - path: /locatons
+            pathType: Prefix
+            backend: 
+              service:
+                name: locaton
+                port:
+                  number: 8080
+          - path: /alarms
+            pathType: Prefix
+            backend: 
+              service:
+                name: alarm
+                port:
+                  number: 8080
+          - path: /moves
+            pathType: Prefix
+            backend: 
+              service:
+                name: move
+                port:
+                  number: 8080
+          - path: /families
+            pathType: Prefix
+            backend: 
+              service:
+                name: family
+                port:
+                  number: 8080                  
