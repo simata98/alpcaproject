@@ -1,9 +1,8 @@
 package alpcaproject.domain;
 
-import alpcaproject.domain.*;
 import alpcaproject.infra.AbstractEvent;
-import java.util.*;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @ToString
