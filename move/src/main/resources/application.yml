@@ -105,3 +105,7 @@ spring:
       password:
   datasource:
     generate-unique-name: false
+naver-maps:
+  url: 1
+  client-id: 1
+  client-token: 1

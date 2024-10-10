@@ -25,6 +25,52 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='MoveCancelled'"
+    )
+    public void wheneverMoveCancelled_SendAlarmMsg(
+        @Payload MoveCancelled moveCancelled
+    ) {
+        MoveCancelled event = moveCancelled;
+        System.out.println(
+            "\n\n##### listener SendAlarmMsg : " + moveCancelled + "\n\n"
+        );
+
+        // Sample Logic //
+        Alarm.sendAlarmMsg(event);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='MoveUpdated'"
+    )
+    public void wheneverMoveUpdated_SendAlarmMsg(
+        @Payload MoveUpdated moveUpdated
+    ) {
+        MoveUpdated event = moveUpdated;
+        System.out.println(
+            "\n\n##### listener SendAlarmMsg : " + moveUpdated + "\n\n"
+        );
+
+        // Sample Logic //
+        Alarm.sendAlarmMsg(event);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='MoveEnded'"
+    )
+    public void wheneverMoveEnded_SendAlarmMsg(@Payload MoveEnded moveEnded) {
+        MoveEnded event = moveEnded;
+        System.out.println(
+            "\n\n##### listener SendAlarmMsg : " + moveEnded + "\n\n"
+        );
+
+        // Sample Logic //
+        Alarm.sendAlarmMsg(event);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
         condition = "headers['type']=='MoveStarted'"
     )
     public void wheneverMoveStarted_SendAlarmMsg(
@@ -37,36 +83,6 @@ public class PolicyHandler {
 
         // Sample Logic //
         Alarm.sendAlarmMsg(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveCancelled'"
-    )
-    public void wheneverMoveCancelled_CancelAlarmMsg(
-        @Payload MoveCancelled moveCancelled
-    ) {
-        MoveCancelled event = moveCancelled;
-        System.out.println(
-            "\n\n##### listener CancelAlarmMsg : " + moveCancelled + "\n\n"
-        );
-
-        // Sample Logic //
-        Alarm.cancelAlarmMsg(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveEnded'"
-    )
-    public void wheneverMoveEnded_EndAlarmMsg(@Payload MoveEnded moveEnded) {
-        MoveEnded event = moveEnded;
-        System.out.println(
-            "\n\n##### listener EndAlarmMsg : " + moveEnded + "\n\n"
-        );
-
-        // Sample Logic //
-        Alarm.endAlarmMsg(event);
     }
 }
 //>>> Clean Arch / Inbound Adaptor
