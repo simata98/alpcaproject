@@ -19,8 +19,9 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long customerId;
+    private Long id;
 
+    private String customerId;
     private String familyId;
     private String status;
 

@@ -12,7 +12,7 @@ spring:
         - id: customer
           uri: http://localhost:8082
           predicates:
-            - Path=/cutomers/**, 
+            - Path=/customers/**, 
         - id: move
           uri: http://localhost:8083
           predicates:
@@ -56,7 +56,7 @@ spring:
         - id: customer
           uri: http://customer:8080
           predicates:
-            - Path=/cutomers/**, 
+            - Path=/customers/**, 
         - id: move
           uri: http://move:8080
           predicates:

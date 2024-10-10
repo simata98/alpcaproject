@@ -26,13 +26,12 @@ public class CustomerController {
         produces = "application/json;charset=UTF-8"
     )
     public Customer deleteCustomer(
-        @PathVariable String id,
+        @PathVariable Long id,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {
         System.out.println("##### /customer/deleteCustomer  called #####");
-        Long customerId = Long.parseLong(id);
-        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
         optionalCustomer.orElseThrow(() -> new Exception("No Customer Found"));
         Customer customer = optionalCustomer.get();
         customer.deleteCustomer();
