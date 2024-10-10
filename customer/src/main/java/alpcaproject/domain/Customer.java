@@ -28,7 +28,6 @@ public class Customer {
     @PostPersist
     public void onPostPersist() {
         // customer를 등록하려면 family 등록도 진행되어야 함
-        this.status = "Registered";
         CustomerRegistered customerRegistered = new CustomerRegistered(this);
         customerRegistered.publishAfterCommit();
     }

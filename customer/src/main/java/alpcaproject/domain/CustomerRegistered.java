@@ -10,7 +10,7 @@ import lombok.ToString;
 public class CustomerRegistered extends AbstractEvent {
 
     private String customerId;
-    private String status;
+    private String familyId;
 
     public CustomerRegistered(Customer aggregate) {
         super(aggregate);
