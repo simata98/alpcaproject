@@ -2,53 +2,94 @@ package alpcaproject.infra;
 
 import alpcaproject.domain.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import alpcaproject.util.NaverMapService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+import java.util.HashMap;
+
 //<<< Clean Arch / Inbound Adaptor
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value="/moves")
+//@RequestMapping(value="/moves")
 @Transactional
 public class MoveController {
 
     private final NaverMapService naverMapService;
+    private final MoveRepository moveRepository;
 
-    @PostMapping("/start")
-    public ResponseEntity<Map<String, String>> start(@RequestBody MoveStarted moveStarted) {
-        String moveId = Move.startMove(moveStarted);
-        Map<String, String> response = new HashMap<>();
-        response.put("moveId", moveId);
-        return ResponseEntity.ok(response);
+    @RequestMapping(
+            value = "/moves/startmove",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8"
+    )
+    public ResponseEntity<Map<String, String>> startMove(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody StartMoveCommand startMoveCommand
+    ) throws Exception {
+        System.out.println("##### /move/startMove  called #####");
+        Move move = new Move();
+        MoveStarted moveStarted = move.startMove(startMoveCommand);
+        Map<String, String> resp = new HashMap<>();
+        resp.put("moveId", moveStarted.getMoveId());
+        return ResponseEntity.ok(resp);
     }
 
-    @PostMapping("/update")
-    public void update(@RequestBody MoveUpdated moveUpdated) {
-        Move.updateMove(moveUpdated);
+    @RequestMapping(
+            value = "/moves/updatemove",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8"
+    )
+    public void updateMove(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody UpdateMoveCommand updateMoveCommand
+    ) throws Exception {
+        System.out.println("##### /move/updateMove  called #####");
+        Move move = new Move();
+        move.updateMove(updateMoveCommand);
     }
 
-    @GetMapping("/cancel")
-    public void cancel(MoveCancelled moveCancelled) {
-        Move.cancelMove(moveCancelled);
+    @RequestMapping(
+            value = "/moves/endmove",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8"
+    )
+    public void endMove(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody EndMoveCommand endMoveCommand
+    ) throws Exception {
+        System.out.println("##### /move/endMove  called #####");
+        Move move = new Move();
+        move.endMove(endMoveCommand);
     }
 
-    @GetMapping("/end")
-    public void end(MoveEnded moveEnded) {
-         Move.endMove(moveEnded);
+    @RequestMapping(
+            value = "/moves/cancelmove",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8"
+    )
+    public void cancelMove(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody CancelMoveCommand cancelMoveCommand
+    ) throws Exception {
+        System.out.println("##### /move/cancelMove  called #####");
+        Move move = new Move();
+        move.cancelMove(cancelMoveCommand);
     }
+
 //    @GetMapping("/directions")
 //    public String getDrivingDirections(
 //            @RequestParam("start") String start,

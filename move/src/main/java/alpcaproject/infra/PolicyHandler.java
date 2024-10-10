@@ -36,7 +36,7 @@ public class PolicyHandler {
         );
 
         // Sample Logic //
-        Move.updateGoalLoc(event);
+//        Move.updateGoalLoc(event);
     }
 
     @StreamListener(
@@ -52,69 +52,69 @@ public class PolicyHandler {
         );
 
         // Sample Logic //
-        Move.removeGoalLoc(event);
+//        Move.removeGoalLoc(event);
     }
 
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveStarted'"
-    )
-    public void wheneverMoveStarted_StartMove(
-        @Payload MoveStarted moveStarted
-    ) {
-        MoveStarted event = moveStarted;
-        System.out.println(
-            "\n\n##### listener StartMove : " + moveStarted + "\n\n"
-        );
+//    @StreamListener(
+//        value = KafkaProcessor.INPUT,
+//        condition = "headers['type']=='MoveStarted'"
+//    )
+//    public void wheneverMoveStarted_StartMove(
+//        @Payload MoveStarted moveStarted
+//    ) {
+//        MoveStarted event = moveStarted;
+//        System.out.println(
+//            "\n\n##### listener StartMove : " + moveStarted + "\n\n"
+//        );
+//
+//        // Sample Logic //
+//        Move.startMove(event);
+//    }
 
-        // Sample Logic //
-        Move.startMove(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveUpdated'"
-    )
-    public void wheneverMoveUpdated_UpdateMove(
-        @Payload MoveUpdated moveUpdated
-    ) {
-        MoveUpdated event = moveUpdated;
-        System.out.println(
-            "\n\n##### listener UpdateMove : " + moveUpdated + "\n\n"
-        );
-
-        // Sample Logic //
-        Move.updateMove(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveCancelled'"
-    )
-    public void wheneverMoveCancelled_CancelMove(
-        @Payload MoveCancelled moveCancelled
-    ) {
-        MoveCancelled event = moveCancelled;
-        System.out.println(
-            "\n\n##### listener CancelMove : " + moveCancelled + "\n\n"
-        );
-
-        // Sample Logic //
-        Move.cancelMove(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='MoveEnded'"
-    )
-    public void wheneverMoveEnded_EndMove(@Payload MoveEnded moveEnded) {
-        MoveEnded event = moveEnded;
-        System.out.println(
-            "\n\n##### listener EndMove : " + moveEnded + "\n\n"
-        );
-
-        // Sample Logic //
-        Move.endMove(event);
-    }
+//    @StreamListener(
+//        value = KafkaProcessor.INPUT,
+//        condition = "headers['type']=='MoveUpdated'"
+//    )
+//    public void wheneverMoveUpdated_UpdateMove(
+//        @Payload MoveUpdated moveUpdated
+//    ) {
+//        MoveUpdated event = moveUpdated;
+//        System.out.println(
+//            "\n\n##### listener UpdateMove : " + moveUpdated + "\n\n"
+//        );
+//
+//        // Sample Logic //
+//        Move.updateMove(event);
+//    }
+//
+//    @StreamListener(
+//        value = KafkaProcessor.INPUT,
+//        condition = "headers['type']=='MoveCancelled'"
+//    )
+//    public void wheneverMoveCancelled_CancelMove(
+//        @Payload MoveCancelled moveCancelled
+//    ) {
+//        MoveCancelled event = moveCancelled;
+//        System.out.println(
+//            "\n\n##### listener CancelMove : " + moveCancelled + "\n\n"
+//        );
+//
+//        // Sample Logic //
+//        Move.cancelMove(event);
+//    }
+//
+//    @StreamListener(
+//        value = KafkaProcessor.INPUT,
+//        condition = "headers['type']=='MoveEnded'"
+//    )
+//    public void wheneverMoveEnded_EndMove(@Payload MoveEnded moveEnded) {
+//        MoveEnded event = moveEnded;
+//        System.out.println(
+//            "\n\n##### listener EndMove : " + moveEnded + "\n\n"
+//        );
+//
+//        // Sample Logic //
+//        Move.endMove(event);
+//    }
 }
 //>>> Clean Arch / Inbound Adaptor
