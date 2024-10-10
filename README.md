@@ -11,6 +11,9 @@
 - [구현]
 - [운영]
 
+<br>
+<br>
+
 ## 서비스 시나리오
 
 ---
@@ -36,6 +39,9 @@
 3. 성능
     - 모든 가족 구성원에 대한 위치 정보 및 이동 상태 등을 한번에 확인할 수 있어야한다. (CQRS)
     - 도착 상태가 바뀔 때마다 웹 알림을 줄 수 있어야 한다. (Event driven)
+
+<br>
+<br>
 
 ## 분석 설계
 
@@ -86,4 +92,147 @@
 사용자와 가족단위를 함께 승인 및 거절 처리하는 것은 어렵다고 판단하여, 컨텍스트를 분리.
 
 회원가입 시 가족을 등록하면 가족 구성원이 승인 및 거절 판별 후에 승인 시 가족이 되는 식으로 변경.
+
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image8.png)
+
+Family가 되기 위해서 Customer가 Register가 된 후 바로 Command로 실행하는 것이 아닌 Policy를 통해 한 번 Event를 받고 동작하도록 수정
+Alarm은 알람을 준다는 행위 자체를 한 개의 Policy로 보고 3개의 Command로 나뉘어져 있던 것을 한 개로 통합.
+
+<br>
+<br>
+
+## 구현
+---
+각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현. 구현한 각 서비스를 로컬에서 실행하는 방법은 다음과 같다. (사용 포트 넘버는 8081 ~ 808n)
+```shell
+mvn spring-boot:run
+```
+
+<br>
+<br>
+
+### CQRS
+---
+이동(Move), 위치(Location) 등 Status에 대하여 고객(Customer)와 가족(Family)가 조회 및 알람을 받을 수 있도록 CQRS로 구현.
+
+- Customer 개별 distace, duration, status Aggregate Status를 통합 조회하여 성능 Issue를 사전에 예방할 수 있다.
+- 비동기식으로 처리되며, Kafka를 통해 수신/처리 되어 별도 Table에 관리
+- CustomerRegister 이벤트 발생 시, Pub/Sub 기반으로 FamilyId에 해당하는 구성원이 수락해야 계정이 Active가 되도록 구성
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image12.png)
+
+<br>
+<br>
+
+## Docker Build 이미지 생성 및 배포(Docker hub)
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image9.png)
+
+<br>
+
+## K8S 배포 설정
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image10.png)
+Azure Aks에 배포
+
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image11.png)
+AKS Pod, service, deployment, replicaset 들이 정상적으로 배포되고 LoadBalancer를 통해 잘 외부 IP에 배포된 모습
+<br>
+
+## API GateWay 
+```yaml
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+#<<< API Gateway / Routes
+      routes:
+        - id: customer
+          uri: http://localhost:8082
+          predicates:
+            - Path=/customers/**, 
+        - id: move
+          uri: http://localhost:8083
+          predicates:
+            - Path=/moves/**, 
+        - id: family
+          uri: http://localhost:8084
+          predicates:
+            - Path=/families/**, 
+        - id: alarm
+          uri: http://localhost:8085
+          predicates:
+            - Path=/alarms/**, 
+        - id: location
+          uri: http://localhost:8086
+          predicates:
+            - Path=/locations/**, 
+        - id: frontend
+          uri: http://localhost:8080
+          predicates:
+            - Path=/**
+#>>> API Gateway / Routes
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: customer
+          uri: http://customer:8080
+          predicates:
+            - Path=/customers/**, 
+        - id: move
+          uri: http://move:8080
+          predicates:
+            - Path=/moves/**, 
+        - id: family
+          uri: http://family:8080
+          predicates:
+            - Path=/families/**, 
+        - id: alarm
+          uri: http://alarm:8080
+          predicates:
+            - Path=/alarms/**, 
+        - id: location
+          uri: http://location:8080
+          predicates:
+            - Path=/locations/**, 
+        - id: frontend
+          uri: http://frontend:8080
+          predicates:
+            - Path=/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+
+```
+
+## Ingress 설정
+내용
 
