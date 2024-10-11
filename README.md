@@ -452,6 +452,7 @@ API Key는 따로 관리하기 위해 yaml 파일로 관리 후 변수로 로드
 <br>
 
 ![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/move.png)
+
 - 이동 중인 상태일 떄 지속적으로 움직임을 업데이트 하여 위치를 최신화합니다.
 
 <br>
