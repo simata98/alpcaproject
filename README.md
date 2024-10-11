@@ -428,3 +428,17 @@ spec:
 ### Secret
 API Key는 따로 관리하기 위해 yaml 파일로 관리 후 변수로 로드
 ![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/secret.png)
+
+```yaml
+          env:
+          - name: naver-maps-client-id
+            valueFrom:
+              secretKeyRef:
+                name: secret-config
+                key: naver-maps-client-id
+          - name: naver-maps-client-token
+            valueFrom:
+              secretKeyRef:
+                name: secret-config
+                key: naver-maps-client-token
+```
