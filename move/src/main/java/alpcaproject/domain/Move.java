@@ -46,21 +46,6 @@ public class Move {
 
     private String customerId;
 
-    @PostPersist
-    public void onPostPersist() {
-//        MoveStarted moveStarted = new MoveStarted(this);
-//        moveStarted.publishAfterCommit();
-//
-//        MoveCancelled moveCancelled = new MoveCancelled(this);
-//        moveCancelled.publishAfterCommit();
-//
-//        MoveEnded moveEnded = new MoveEnded(this);
-//        moveEnded.publishAfterCommit();
-//
-//        MoveUpdated moveUpdated = new MoveUpdated(this);
-//        moveUpdated.publishAfterCommit();
-    }
-
     public static MoveRepository repository() {
         MoveRepository moveRepository = MoveApplication.applicationContext.getBean(
             MoveRepository.class
@@ -93,12 +78,11 @@ public class Move {
 
     }
     //<<< Clean Arch / Port Method
-    public MoveStarted startMove(StartMoveCommand startMoveCommand) {
+    public void startMove(StartMoveCommand startMoveCommand) {
         //implement business logic here: move 생성
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         Move move = new Move();
-        move.setMoveId("move-" + LocalDateTime.now().format(formatter));
         // from caller
+        move.setMoveId(startMoveCommand.getMoveId());
         move.setCustomerId(startMoveCommand.getCustomerId());
         move.setFamilyId(startMoveCommand.getFamilyId());
         move.setRole("143rwe");
@@ -110,9 +94,6 @@ public class Move {
                 );
         move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
         move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
-        log.info("startLocx : {}, startLocy : {}", startMoveCommand.getStartLocX(), startMoveCommand.getStartLocY().toString());
-        log.info("goalLocx : {}, goalocy : {}", startMoveCommand.getGoalLocX().toString(), startMoveCommand.getGoalLocY().toString());
-        log.info("path : {}", resp.getRoute().getTraavoidtoll().get(0).getPath().toString());
         move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(2).toString());
         move.setStartLocX(startMoveCommand.getStartLocX());
         move.setStartLocY(startMoveCommand.getStartLocY());
@@ -123,8 +104,6 @@ public class Move {
         repository().save(move);
         MoveStarted moveStarted = new MoveStarted(move);
         moveStarted.publishAfterCommit();
-        log.info(moveStarted.toString());
-        return moveStarted;
     }
 
     //>>> Clean Arch / Port Method
@@ -146,9 +125,6 @@ public class Move {
             );
             move.setDistance(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDistance());
             move.setDuration(resp.getRoute().getTraavoidtoll().get(0).getSummary().getDuration());
-            log.info("startLocx : {}, startLocy : {}", startLocx, startLocy);
-            log.info("goalLocx : {}, goalocy : {}", move.getGoalLocX().toString(), move.getGoalLocY().toString());
-            log.info("path : {}", resp.getRoute().getTraavoidtoll().get(0).getPath().toString());
             move.setPath(resp.getRoute().getTraavoidtoll().get(0).getPath().get(2).toString());
             move.setStatus("moving");
             repository().save(move);

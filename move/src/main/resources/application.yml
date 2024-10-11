@@ -107,3 +107,7 @@ spring:
       password:
   datasource:
     generate-unique-name: false
+naver-maps:
+  url: https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving
+  client-id: ${NAVER_MAPS_CLIENT_ID}
+  client-token: ${NAVER_MAPS_CLIENT_TOKEN}

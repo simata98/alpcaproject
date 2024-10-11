@@ -8,9 +8,13 @@
     - [비기능적요구사항](#비기능적-요구사항)
     - [분석설계](#분석-설계)
     - [이벤트스토밍 결과](#event-storming-결과)
-- [구현]
-- [운영]
-
+- [구현](#구현)
+    - [CQRS](#cqrs)
+- [운영](#운영)
+    - [Docker](#docker-build-이미지-생성-및-배포docker-hub)
+    - [K8S](#k8s-배포-설정)
+    - [API GateWay](#api-gateway)
+    - [Ingress](#ingress-설정)
 <br>
 <br>
 
@@ -115,20 +119,136 @@ mvn spring-boot:run
 ---
 이동(Move), 위치(Location) 등 Status에 대하여 고객(Customer)와 가족(Family)가 조회 및 알람을 받을 수 있도록 CQRS로 구현.
 
-- Customer 개별 distace, duration, status Aggregate Status를 통합 조회하여 성능 Issue를 사전에 예방할 수 있다.
+- Customer 개별 distace, duration, status Aggregate Status를 moveview를 통해 통합 조회하여 성능 Issue를 사전에 예방할 수 있다.
 - 비동기식으로 처리되며, Kafka를 통해 수신/처리 되어 별도 Table에 관리
 - CustomerRegister 이벤트 발생 시, Pub/Sub 기반으로 FamilyId에 해당하는 구성원이 수락해야 계정이 Active가 되도록 구성
 ![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image12.png)
 
+CQRS 데이터프로젝션을 moveview로 구현하여 API 요청시 customerId에 따른 상태값을 조회할 수 있다.
+```json
+{
+    "_embedded": {
+        "moveviews": [
+            {
+                "customerId": "guest2",
+                "distance": 25220,
+                "duration": 1630132,
+                "status": "moving",
+                "locId": "loc-20241011013733",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011013732"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011013732"
+                    }
+                }
+            },
+            {
+                "customerId": "guest1",
+                "distance": 10328,
+                "duration": 1334892,
+                "status": "moving",
+                "locId": "loc-20241011013746",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011013746"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011013746"
+                    }
+                }
+            },
+            {
+                "customerId": "guest1",
+                "distance": 19217,
+                "duration": 1543509,
+                "status": "moving",
+                "locId": "loc-20241011014036",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014035"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014035"
+                    }
+                }
+            },
+            {
+                "customerId": "guest1",
+                "distance": 19324,
+                "duration": 1589128,
+                "status": "moving",
+                "locId": "loc-20241011014351",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014350"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014350"
+                    }
+                }
+            },
+            {
+                "customerId": "guest1",
+                "distance": 10091,
+                "duration": 1287967,
+                "status": "moving",
+                "locId": "loc-20241011014856",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014856"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011014856"
+                    }
+                }
+            },
+            {
+                "customerId": "guest1",
+                "distance": 25217,
+                "duration": 1596921,
+                "status": "moving",
+                "locId": "loc-20241011015303",
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8087/moveviews/move-20241011015303"
+                    },
+                    "moveview": {
+                        "href": "http://localhost:8087/moveviews/move-20241011015303"
+                    }
+                }
+            }
+        ]
+    },
+    "_links": {
+        "self": {
+            "href": "http://localhost:8087/moveviews"
+        },
+        "profile": {
+            "href": "http://localhost:8087/profile/moveviews"
+        }
+    },
+    "page": {
+        "size": 20,
+        "totalElements": 6,
+        "totalPages": 1,
+        "number": 0
+    }
+}
+```
+
 <br>
 <br>
 
-## Docker Build 이미지 생성 및 배포(Docker hub)
+## 운영
+
+### Docker Build 이미지 생성 및 배포(Docker hub)
 ![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image9.png)
 
 <br>
 
-## K8S 배포 설정
+### K8S 배포 설정
 ![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image10.png)
 Azure Aks에 배포
 
@@ -136,7 +256,7 @@ Azure Aks에 배포
 AKS Pod, service, deployment, replicaset 들이 정상적으로 배포되고 LoadBalancer를 통해 잘 외부 IP에 배포된 모습
 <br>
 
-## API GateWay 
+### API GateWay 
 ```yaml
 server:
   port: 8088
@@ -233,6 +353,73 @@ server:
 
 ```
 
-## Ingress 설정
-내용
+### Ingress 설정
+Ingress를 사용하여 GateWay 포워딩 진행
 
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/image13.png)
+
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: "Ingress"
+metadata: 
+  name: "family-allimee-ingress"
+  annotations: 
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingressclass.kubernetes.io/is-default-class: "true"
+spec: 
+  ingressClassName: nginx
+  rules: 
+    - host: ""
+      http: 
+        paths: 
+          - path: /*
+            pathType: Prefix
+            backend: 
+              service:
+                name: frontend
+                port:
+                  number: 8080
+          - path: /customers
+            pathType: Prefix
+            backend: 
+              service:
+                name: customer
+                port:
+                  number: 8080
+          - path: /locations
+            pathType: Prefix
+            backend: 
+              service:
+                name: location
+                port:
+                  number: 8080
+          - path: /alarms
+            pathType: Prefix
+            backend: 
+              service:
+                name: alarm
+                port:
+                  number: 8080
+          - path: /moves
+            pathType: Prefix
+            backend: 
+              service:
+                name: move
+                port:
+                  number: 8080
+          - path: /families
+            pathType: Prefix
+            backend: 
+              service:
+                name: family
+                port:
+                  number: 8080     
+          - path: /moveviews
+            pathType: Prefix
+            backend: 
+              service:
+                name: moveview
+                port:
+                  number: 8080  
+```
