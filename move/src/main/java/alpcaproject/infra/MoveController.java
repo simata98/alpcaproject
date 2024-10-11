@@ -32,17 +32,14 @@ public class MoveController {
             method = RequestMethod.POST,
             produces = "application/json;charset=UTF-8"
     )
-    public ResponseEntity<Map<String, String>> startMove(
+    public void startMove(
             HttpServletRequest request,
             HttpServletResponse response,
             @RequestBody StartMoveCommand startMoveCommand
     ) throws Exception {
         System.out.println("##### /move/startMove  called #####");
         Move move = new Move();
-        MoveStarted moveStarted = move.startMove(startMoveCommand);
-        Map<String, String> resp = new HashMap<>();
-        resp.put("moveId", moveStarted.getMoveId());
-        return ResponseEntity.ok(resp);
+        move.startMove(startMoveCommand);
     }
 
     @RequestMapping(

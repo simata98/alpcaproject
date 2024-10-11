@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: move
+    name: moveview
 ---
 
 spring:
@@ -29,7 +29,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: move
+          group: moveview
 #<<< EDA / Topic Name
           destination: alpcaproject
 #>>> EDA / Topic Name
@@ -45,23 +45,19 @@ spring:
       path: /h2-console
     datasource:
       driver-class-name: org.h2.Driver
-      url: jdbc:h2:mem:move
+      url: jdbc:h2:mem:moveview
       username: sa
       password:
   datasource:
     generate-unique-name: false
 logging:
   level:
-    org.hibernate.type: info
-    org.springframework.cloud: info
+    org.hibernate.type: trace
+    org.springframework.cloud: debug
 
-naver-maps:
-  url: https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving
-  client-id: auwudtezo3
-  client-token: DDn4WeLj4RW091e3fpfEfitFtI1qRiqF6Q3IE0YT
 
 server:
-  port: 8083
+  port: 8087
 
 ---
 
@@ -88,7 +84,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: move
+          group: moveview
           destination: alpcaproject
           contentType: application/json
         event-out:
@@ -100,12 +96,9 @@ spring:
       path: /h2-console
     datasource:
       driver-class-name: org.h2.Driver
-      url: jdbc:h2:mem:move
+      url: jdbc:h2:mem:moveview
       username: sa
       password:
   datasource:
     generate-unique-name: false
-naver-maps:
-  url: https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving
-  client-id: ${NAVER_MAPS_CLIENT_ID}
-  client-token: ${NAVER_MAPS_CLIENT_TOKEN}
+
