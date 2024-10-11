@@ -15,6 +15,7 @@
     - [K8S](#k8s-배포-설정)
     - [API GateWay](#api-gateway)
     - [Ingress](#ingress-설정)
+    - [Secret](#Secret)
 <br>
 <br>
 
@@ -423,3 +424,7 @@ spec:
                 port:
                   number: 8080  
 ```
+
+### Secret
+API Key는 따로 관리하기 위해 yaml 파일로 관리 후 변수로 로드
+![image.png](AICT%20Cloud%20Project%20b2a5de0cd0f54fa1bbb1cbd870b78442/secret.png)
